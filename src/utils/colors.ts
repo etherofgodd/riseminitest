@@ -1,0 +1,20 @@
+export default {
+    black: "#000",
+    orange:"#FE7122",
+    lightOrange:"#FE712233",
+    indigo:'#B80074',
+    lightIndigo:'#B8007433',
+    teal:"#0898A0",
+    lightTeal:"#0898A033",
+    offWhite:"#71879C33",
+    text: "#94A1AD",
+    neutral: "#222",
+    offWhiteLight:"#71879C1A",
+    white: "#fff",
+    softNeutral: "#71879C",
+    error: "#f43d33",
+    darkText:"#012224",
+    defaultTeal:"#0898A0",
+    grey: "#333",
+    instructive: "#27BF41"
+};
