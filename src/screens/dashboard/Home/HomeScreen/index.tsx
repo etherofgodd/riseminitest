@@ -7,19 +7,59 @@ import {SafeAreaView} from "react-native-safe-area-context";
 import AppText from "@/components/AppText";
 import useAuth from "@/hooks/useAuth";
 import {AntDesign, MaterialCommunityIcons} from "@expo/vector-icons";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {homeScreenStyles} from "@/screens/dashboard/Home/HomeScreen/homeScreenStyles";
 import {DashboardHeader} from "@/components/DashboardHeader";
 import {HomeBalanceCard} from "@/components/HomeBalanceCard";
 import {CreateAPlan} from "@/components/CreateAPlan";
 import {QuoteBadge} from "@/components/QuoteBadge";
+import {useAppDispatch, useAppSelector} from "@/hooks/useAppStore";
+import {fetchUserInfo} from "@/store/profileSlice";
+import {useApi} from "@/hooks/useApi";
+import {getQuotesApiRequest, TQuote} from "@/apis/login";
+import {getUserPlans} from "@/store/planSlice";
+import {PlanCard} from "@/components/PlanCard";
 
 
 // home screen stack is not properly typed, this has been resolved in navigation 6
 export default function Index({navigation}: HomeStackScreenProps<"HomeScreen">) {
-    const {user} = useAuth();
+    const dispatch = useAppDispatch();
 
-    const [visible, setVisible] = useState(false)
+    const {user} = useAppSelector(state => state.profileSlice);
+    const {plans} = useAppSelector(state => state.planSlice)
+
+    const [quoutes, setQuoutes] = useState<TQuote>({
+        author: "Carl Sagan",
+        quote: "We have no intention of rotating capital out of strong multi-year investments because they’ve recently done well or because ‘growth’ has out performed ‘value’."
+    })
+
+    const {request} = useApi(getQuotesApiRequest)
+
+    useEffect(() => {
+
+        const res = navigation.addListener("focus", () => {
+            dispatch(fetchUserInfo())
+            dispatch(getUserPlans())
+            onLoad();
+        })
+
+        return res
+
+    }, [navigation])
+
+    const onLoad = async () => {
+        const {response} = await request();
+
+        if (response.ok) {
+            setQuoutes(response.data || {
+                author: "Carl Sagan",
+                quote: "We have no intention of rotating capital out of strong multi-year investments because they’ve recently done well or because ‘growth’ has out performed ‘value’."
+            })
+        }
+    }
+
+    console.log("plans", plans)
+
     return (
         <View
             style={homeScreenStyles.ctn}
@@ -41,7 +81,7 @@ export default function Index({navigation}: HomeStackScreenProps<"HomeScreen">) 
                     >
 
                         <DashboardHeader name={user?.first_name || "user"}/>
-                        <HomeBalanceCard/>
+                        <HomeBalanceCard balance={user.total_balance}/>
 
                         <TouchableOpacity
                             style={homeScreenStyles.addMoney}
@@ -72,6 +112,9 @@ export default function Index({navigation}: HomeStackScreenProps<"HomeScreen">) 
 
                                 <TouchableOpacity
                                     style={homeScreenStyles.allView}
+                                    onPress={() => navigation.navigate("Plans", {
+                                        screen: "MainPlanScreen",
+                                    })}
                                 >
                                     <AppText
                                         style={homeScreenStyles.allViewTxt}
@@ -96,21 +139,31 @@ export default function Index({navigation}: HomeStackScreenProps<"HomeScreen">) 
                                     marginTop: pixelSizeVertical(20)
                                 }}
                             >
-
-
                                 <FlatList
-                                    data={[1]}
+                                    data={plans}
+                                    extraData={plans}
+                                    showsHorizontalScrollIndicator={false}
                                     horizontal
-                                    renderItem={() =>
-                                        <View>
-                                            <AppText>oom</AppText>
-                                        </View>}
-
+                                    renderItem={({item, index}) =>
+                                        <PlanCard
+                                            title={item.plan_name}
+                                            price={item.target_amount.toString()}
+                                            index={index}
+                                            onPress={() => navigation.navigate("Plans", {
+                                                screen: "PlanIdScreen",
+                                                params: {
+                                                    id: item.id
+                                                }
+                                            })
+                                            }
+                                        />
+                                    }
                                     ListHeaderComponent={
                                         <CreateAPlan
                                             onPress={() => navigation.navigate("Plans", {
                                                 screen: "PlanScreen",
-                                            })}
+                                            })
+                                            }
                                         />
                                     }
                                 />
@@ -148,8 +201,8 @@ export default function Index({navigation}: HomeStackScreenProps<"HomeScreen">) 
 
 
                                 <QuoteBadge
-                                 name={"Sagan"}
-                                 quote={"skmdodm"}
+                                    name={quoutes.author}
+                                    quote={quoutes.quote}
                                 />
 
 

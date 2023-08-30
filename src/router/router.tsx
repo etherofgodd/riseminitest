@@ -31,7 +31,7 @@ export default function Router() {
             }}
         >
             {
-                true ? (
+                userAuthenticated() ? (
                     <MainScreenNavigator
                         routeName={routeName}
                     />

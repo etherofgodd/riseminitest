@@ -15,6 +15,7 @@ const Tab = createBottomTabNavigator<AppTabParamList>();
 
 const MainScreenNavigator = ({routeName}: Props) => {
     const homeFilter = routeName === "HomeScreen";
+    const planFilter = routeName === "MainPlanScreen";
     const walletFilter = routeName === "Wallet";
     const feedFilter = routeName === "Feed";
     const accountFilter = routeName === "Account";
@@ -64,7 +65,7 @@ const MainScreenNavigator = ({routeName}: Props) => {
                         />,
                     tabBarStyle: {
                         height: heightPixel(90),
-                        display: "none",
+                        display: planFilter ? "flex" : "none",
                     },
                     unmountOnBlur: false
                 }}

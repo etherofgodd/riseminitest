@@ -1,6 +1,14 @@
 import {createNativeStackNavigator} from "react-native-screens/native-stack";
 import {HomeStackParamList, PlanStackParamList} from "@/types/navigationTypes";
-import {CreatePlanScreen, HomeScreen, PlanScreen} from "@/screens";
+import {
+    CreatePlanScreen,
+    HomeScreen,
+    MainPlanScreen,
+    PlanIdScreen,
+    PlanScreen,
+    PreviewScreen,
+    SuccessScreen
+} from "@/screens";
 
 
 const Stack = createNativeStackNavigator<PlanStackParamList>();
@@ -13,8 +21,13 @@ export const PlanStackNavigator = () => {
                 headerShown: false,
                 navigationBarHidden: true,
             }}
-            initialRouteName="PlanScreen"
+            initialRouteName="MainPlanScreen"
         >
+            <Stack.Screen
+                name="MainPlanScreen"
+                component={MainPlanScreen}
+            />
+
             <Stack.Screen
                 name="PlanScreen"
                 component={PlanScreen}
@@ -27,6 +40,22 @@ export const PlanStackNavigator = () => {
                 name="CreatePlanScreen"
                 component={CreatePlanScreen}
             />
+
+            <Stack.Screen
+                name="PreviewScreen"
+                component={PreviewScreen}
+            />
+
+            <Stack.Screen
+                name="SuccessScreen"
+                component={SuccessScreen}
+            />
+
+            <Stack.Screen
+                name="PlanIdScreen"
+                component={PlanIdScreen}
+            />
+
         </Stack.Navigator>
     )
 }

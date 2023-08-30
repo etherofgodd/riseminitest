@@ -4,8 +4,13 @@ import AppText from "@/components/AppText";
 import colors from "@/utils/colors";
 import {Ionicons} from "@expo/vector-icons";
 import {useState} from "react";
+import {formatText} from "@/utils/inputFormatter";
 
-export const HomeBalanceCard = () => {
+
+type Prop = {
+    balance: number
+}
+export const HomeBalanceCard = ({balance}: Prop) => {
     const [visible, setVisible] = useState(false)
 
     return (
@@ -29,7 +34,7 @@ export const HomeBalanceCard = () => {
             <AppText
                 style={styles.balance}
             >
-                ${!visible ? "***" : "0.00"}
+                ${!visible ? "***" : formatText(balance ? balance.toString() : "0")}
             </AppText>
 
             <View

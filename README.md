@@ -1,4 +1,5 @@
-> Rise vest React native test by ANDREW SAMUEL.
+> Rise vest React native test by ANDREW SAMUEL.  
+
 > Important keys to note
 - "Project": This project was created using react native expo, react navigation 5 and redux toolkit
 - "Build": I Used eas build to bundle the apk

@@ -15,6 +15,11 @@ import {MaterialCommunityIcons} from "@expo/vector-icons";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {useAppDispatch} from "@/hooks/useAppStore";
 import {setPlanState} from "@/store/authSlice";
+import {IPlanProjection, IPreviewData} from "@/types/plan";
+import {calculateMonthsDifference} from "@/utils/helper";
+import {useApi} from "@/hooks/useApi";
+import {planProjectionApiRequest} from "@/apis/plan";
+import {setMessage} from "@/store/appState";
 
 
 type TSCREENPHASE = "ONE" | "TWO" | "THREE";
@@ -30,7 +35,12 @@ if (Platform.OS === "android") {
 export default function Index({navigation}: PlanStackScreenProps<"CreatePlanScreen">) {
     const [step, setStep] = useState<TSCREENPHASE>("ONE");
     const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
-    const [dateValue, setDateValue] = useState(new Date());
+    const currentDate = new Date();
+    const nextYear = new Date(currentDate);
+    nextYear.setFullYear(currentDate.getFullYear() + 1);
+    const [dateValue, setDateValue] = useState(nextYear);
+
+    const {request, loading: planProgesssionLoading} = useApi(planProjectionApiRequest)
 
     const dispatch = useAppDispatch();
 
@@ -67,19 +77,48 @@ export default function Index({navigation}: PlanStackScreenProps<"CreatePlanScre
                 LayoutAnimation.Presets.easeInEaseOut
             );
         }
-
     }, [step]);
 
-    const onBtnPressed = () => {
+    const onBtnPressed = async () => {
         if (step == "ONE") {
             return targetName && setStep("TWO")
         } else if (step == "TWO") {
             return targetAmount && setStep("THREE")
         }
-        const data: ICreatePlan = {
+
+        const numOfMonth = calculateMonthsDifference(dateValue);
+
+        const monthlyInvestment = Math.abs(+targetAmount / numOfMonth).toFixed(2)
+
+        const getPlanData: IPlanProjection = {
+            maturity_date: `${dateValue.getFullYear()}-${(dateValue.getMonth() + 1).toString().padStart(2, "0")}-${dateValue.getDate()}`,
+            target_amount: +targetAmount,
+            monthly_investment: +monthlyInvestment,
+        }
+
+        const {response: planResponse} = await request(getPlanData);
+
+        let returns: number = 0;
+        let totalInvestments = 0
+
+        if (planResponse.ok) {
+            returns = Number(planResponse.data?.total_returns) || 0;
+            totalInvestments = Number(planResponse.data?.total_invested) || 0
+        } else {
+            return dispatch(setMessage({
+                activeState: true,
+                message: planResponse.data?.message || "Error occurred please try later",
+                messageType: "ERROR"
+            }))
+        }
+
+        const data: IPreviewData = {
             maturity_date: `${dateValue.getFullYear()}-${(dateValue.getMonth() + 1).toString().padStart(2, "0")}-${dateValue.getDate()}`,
             plan_name: targetName,
-            target_amount: +targetAmount
+            target_amount: +targetAmount,
+            estimatedMonthlyInvestment: +monthlyInvestment,
+            returns: returns,
+            totalInvestment: totalInvestments
         }
         navigation.navigate("PreviewScreen", data)
     }
@@ -107,14 +146,7 @@ export default function Index({navigation}: PlanStackScreenProps<"CreatePlanScre
                     }}
                 />
 
-                <AppText style={
-                    {
-                        marginTop: pixelSizeVertical(37),
-                        marginBottom: pixelSizeVertical(21),
-                        color: colors.text,
-                        fontWeight: "400",
-                        lineHeight: fontPixel(22)
-                    }}
+                <AppText style={createPlanStyles.question}
                 >
                     Question {step == "ONE" ? 1 : step == "TWO" ? 2 : 3} of 3
                 </AppText>
@@ -139,14 +171,9 @@ export default function Index({navigation}: PlanStackScreenProps<"CreatePlanScre
                 </View>
 
                 <AppText
-                    style={{
-                        fontSize: fontPixel(17),
-                        fontWeight: "700",
-                        lineHeight: fontPixel(22),
-                        marginBottom: pixelSizeVertical(20)
-                    }}
+                    style={createPlanStyles.questionType}
                 >
-                    What are you saving for
+                    {step == "ONE" ? "What are you saving for" : step == "TWO" ? "How much do need?" : "When do you want to withdraw?"}
                 </AppText>
 
 
@@ -197,6 +224,7 @@ export default function Index({navigation}: PlanStackScreenProps<"CreatePlanScre
                 <AppButton
                     title={"Continue"}
                     onPress={onBtnPressed}
+                    loading={planProgesssionLoading}
                     style={{
                         marginTop: pixelSizeVertical(26)
                     }}
@@ -213,7 +241,7 @@ export default function Index({navigation}: PlanStackScreenProps<"CreatePlanScre
                 onConfirm={handleConfirm}
                 onCancel={hideDatePicker}
                 date={dateValue}
-                minimumDate={new Date(Date.now())}
+                minimumDate={nextYear}
             />
         </AppScreen>
     )

@@ -1,6 +1,7 @@
 import {NativeStackNavigationProp, NativeStackScreenProps} from "react-native-screens/native-stack";
 import {CompositeNavigationProp, NavigatorScreenParams, RouteProp} from "@react-navigation/native";
 import {BottomTabNavigationProp} from "@react-navigation/bottom-tabs";
+import {IPreviewData} from "@/types/plan";
 
 export type AuthStackParamList = {
     OnboardingScreen: undefined;
@@ -24,7 +25,14 @@ export type AuthStackParamList = {
 export type PlanStackParamList = {
     PlanScreen: undefined;
     CreatePlanScreen: undefined;
-    PreviewScreen: ICreatePlan
+    PreviewScreen: IPreviewData;
+    SuccessScreen: {
+        message: string
+    };
+    MainPlanScreen: undefined
+    PlanIdScreen:{
+        id: string
+    }
 }
 
 type PlanScreenNavigationProp<Screen extends keyof PlanStackParamList> =
