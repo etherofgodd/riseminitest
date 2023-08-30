@@ -40,7 +40,9 @@ export default function AppSuccessScreen({navigation, route}: PlanStackScreenPro
                 <View style={authSuccessStyles.btn}>
                     <AppButton
                         title={"View Plan"}
-                        onPress={() => navigation.navigate("MainPlanScreen")}
+                        onPress={() => navigation.navigate("PlanIdScreen", {
+                            id: route.params.id
+                        })}
                     />
                 </View>
 

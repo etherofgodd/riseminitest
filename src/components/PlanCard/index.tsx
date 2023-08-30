@@ -57,13 +57,13 @@ const styles = StyleSheet.create({
         position: "relative",
         overflow: "hidden",
         width: widthPixel(158),
-        height: heightPixel(208),
+        height: heightPixel(243),
         marginRight: pixelSizeHorizontal(20)
     },
     img: {
         position: "absolute",
         width: widthPixel(158),
-        height: heightPixel(208),
+        height: heightPixel(243),
         borderRadius: heightPixel(15),
         zIndex: 100
     },

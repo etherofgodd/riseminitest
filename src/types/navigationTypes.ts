@@ -27,7 +27,8 @@ export type PlanStackParamList = {
     CreatePlanScreen: undefined;
     PreviewScreen: IPreviewData;
     SuccessScreen: {
-        message: string
+        message: string;
+        id: string
     };
     MainPlanScreen: undefined
     PlanIdScreen:{

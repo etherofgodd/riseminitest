@@ -39,7 +39,8 @@ export default function Index({navigation, route}: PlanStackScreenProps<"Preview
             }))
         } else {
             navigation.navigate("SuccessScreen", {
-                message: "You just created a plan"
+                message: "You just created a plan",
+                id: response.data.id
             })
         }
     }

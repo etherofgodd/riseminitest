@@ -21,7 +21,17 @@ import {TransactionList} from "@/components/TransactionList";
 
 const width = Dimensions.get("window").width
 export default function Index({navigation, route}: PlanStackScreenProps<"PlanIdScreen">) {
-    const [plan, setPlan] = useState<IPlanId>({} as IPlanId)
+    const [plan, setPlan] = useState<IPlanId>({
+        maturity_date: "",
+        created_at: "",
+        invested_amount: 0,
+        total_returns: 0,
+        target_amount: 0,
+        plan_name: "",
+        id: "",
+        returns: [],
+        user_id: ""
+    })
 
     const {request} = useApi(getPlanPlanApiRequest)
 
